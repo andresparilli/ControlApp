@@ -1,0 +1,10 @@
+# Este archivo debe ser guardado en ~/.local/share/applications/
+# para que aparezca en el menú de aplicaciones de tu sistema.
+[Desktop Entry]
+Version=1.0
+Name=Control App
+Comment=Un menú para ejecutar scripts personalizados
+Exec=/bin/bash /home/aparilli/ControlApp/menu_scripts.sh
+Terminal=true
+Type=Application
+Icon=utilities-terminal
