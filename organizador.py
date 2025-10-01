@@ -28,6 +28,8 @@ directorio_archivo = os.path.join(carpeta_a_organizar, 'Archivo')
 hace_un_anio = datetime.now() - timedelta(days=365)
 # --- FIN DE LA CONFIGURACIÓN ---
 
+import sys
+
 def organizar_archivos():
     """Organiza los archivos de la carpeta de descargas."""
     print(f"Organizando la carpeta: {carpeta_a_organizar}")
@@ -73,5 +75,40 @@ def organizar_archivos():
                     shutil.move(entry.path, destino_path)
                     print(f"Movido: {entry.name} -> Otros")
 
+def eliminar_carpetas_vacias():
+    """Elimina todas las carpetas vacías en el directorio de organización."""
+    print(f"Buscando y eliminando carpetas vacías en: {carpeta_a_organizar}")
+    carpetas_eliminadas = 0
+    # Itera sobre todas las carpetas en el directorio
+    for dirpath, dirnames, filenames in os.walk(carpeta_a_organizar, topdown=False):
+        # No eliminar la carpeta raíz que estamos organizando
+        if dirpath == carpeta_a_organizar:
+            continue
+
+        # Si la carpeta está vacía, la elimina
+        if not dirnames and not filenames:
+            try:
+                os.rmdir(dirpath)
+                print(f"Eliminada carpeta vacía: {dirpath}")
+                carpetas_eliminadas += 1
+            except OSError as e:
+                print(f"Error al eliminar {dirpath}: {e}")
+
+    if carpetas_eliminadas == 0:
+        print("No se encontraron carpetas vacías.")
+    else:
+        print(f"Total de carpetas eliminadas: {carpetas_eliminadas}")
+
 if __name__ == "__main__":
-    organizar_archivos()
+    # El primer argumento de la línea de comandos (sys.argv[1]) determina qué función ejecutar.
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "organizar":
+            organizar_archivos()
+        elif sys.argv[1] == "limpiar":
+            eliminar_carpetas_vacias()
+        else:
+            print(f"Argumento no reconocido: {sys.argv[1]}")
+            print("Uso: python organizador.py [organizar|limpiar]")
+    else:
+        # Comportamiento predeterminado si no se proporcionan argumentos
+        organizar_archivos()
