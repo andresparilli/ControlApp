@@ -4,6 +4,56 @@
 # Asegúrate de reemplazar "tu_usuario" con tu nombre de usuario real.
 RUTA_ORGANIZADOR="/home/aparilli/organizador.py"
 
+# --- FUNCIONES PARA GESTIONAR RCLONE ---
+
+mostrar_menu_rclone() {
+    while true; do
+        clear
+        echo "==================================="
+        echo "          Gestionar Rclone"
+        echo "==================================="
+        echo "1. Montar Todos los Remotes"
+        echo "2. Desmontar Todos los Remotes"
+        echo "3. Ver Estado de los Montajes"
+        echo "4. Volver al Menú Principal"
+        echo "==================================="
+        read -p "Introduce tu opción: " opcion_rclone
+
+        case $opcion_rclone in
+            1)
+                echo "Montando todos los remotes de rclone..."
+                for service in $(systemctl --user list-unit-files | grep rclone- | awk '{print $1}'); do
+                    echo "Iniciando $service..."
+                    systemctl --user start "$service"
+                done
+                echo "Operación completada."
+                read -p "Presiona Enter para continuar."
+                ;;
+            2)
+                echo "Desmontando todos los remotes de rclone..."
+                for service in $(systemctl --user list-units --state=running | grep rclone- | awk '{print $1}'); do
+                    echo "Deteniendo $service..."
+                    systemctl --user stop "$service"
+                done
+                echo "Operación completada."
+                read -p "Presiona Enter para continuar."
+                ;;
+            3)
+                echo "Estado de los montajes de rclone:"
+                systemctl --user --no-pager status 'rclone-*.service'
+                read -p "Presiona Enter para continuar."
+                ;;
+            4)
+                return
+                ;;
+            *)
+                echo "Opción no válida. Presiona Enter para continuar."
+                read -r
+                ;;
+        esac
+    done
+}
+
 # --- FUNCIONES PARA GESTIONAR CRON ---
 
 # Función para mostrar el submenú de Cron
@@ -112,7 +162,7 @@ abrir_proyecto() {
             elif command -v konsole &> /dev/null; then
                 echo "Abriendo en una nueva terminal (KDE)..."
                 konsole --workdir "$proyecto_ruta"
-            elif command -v xfce4-terminal &> /dev/null; then
+            elif command -v xfce4-terminal &> /dev/null;
                 echo "Abriendo en una nueva terminal (XFCE)..."
                 xfce4-terminal --working-directory="$proyecto_ruta"
             else
@@ -142,7 +192,8 @@ while true; do
     echo "2. Limpiar Carpetas Vacías"
     echo "3. Abrir Proyecto"
     echo "4. Gestionar Tarea Programada (Cron)"
-    echo "5. Salir"
+    echo "5. Gestionar Rclone"
+    echo "6. Salir"
     echo "==================================="
 
     read -p "Introduce tu opción: " opcion
@@ -171,11 +222,15 @@ while true; do
             mostrar_menu_cron
             ;;
         5)
+            # Llama a la función que muestra el menú de rclone
+            mostrar_menu_rclone
+            ;;
+        6)
             echo "Saliendo del Gestor de Scripts. ¡Adiós!"
             exit 0
             ;;
         *)
-            echo "Opción no válida. Por favor, selecciona una opción del 1 al 5."
+            echo "Opción no válida. Por favor, selecciona una opción del 1 al 6."
             echo "Presiona Enter para continuar."
             read -r
             ;;
