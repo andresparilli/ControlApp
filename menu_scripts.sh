@@ -162,7 +162,7 @@ abrir_proyecto() {
             elif command -v konsole &> /dev/null; then
                 echo "Abriendo en una nueva terminal (KDE)..."
                 konsole --workdir "$proyecto_ruta"
-            elif command -v xfce4-terminal &> /dev/null;
+            elif command -v xfce4-terminal &> /dev/null; then
                 echo "Abriendo en una nueva terminal (XFCE)..."
                 xfce4-terminal --working-directory="$proyecto_ruta"
             else
